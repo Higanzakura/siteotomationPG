@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import * as nodemailer from 'nodemailer';
 
-
+//test1
 const websites = [
   'https://fenerium.com/',
   'https://www.fenerbahce.org/',
