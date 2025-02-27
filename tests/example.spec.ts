@@ -1,7 +1,9 @@
 import { test, expect, Page } from '@playwright/test';
+import { Domain } from 'domain';
+import { url } from 'inspector';
 import * as nodemailer from 'nodemailer';
 
-//test12
+
 const websites = [
   'https://fenerium.com/',
   'https://www.fenerbahce.org/',
@@ -56,8 +58,14 @@ const websites = [
   "https://selin.com.tr/",
   "https://www.hijyendemukemmellik.com/",
   "https://www.budget.hu/en", 
-  "https://www.solo.com.tr/"
-
+  "https://www.solo.com.tr/",
+  "https://hayatfinans.com.tr/",
+  "https://sporokullari.fenerbahce.org/",
+  "https://www.kokoa.com.tr",
+  "https://yelken.fenerbahce.org/",
+  "https://www.bigaiaturkiye.com/",
+  "https://www.selfit.com.tr/",
+  "https://www.eczacibasiilac.com.tr/"
 
 
 ];
@@ -75,20 +83,20 @@ async function sendEmail(screenshotPath: string, websiteUrl: string) {
 
   
   const recipients = [
-    'otokocmobiltest@portalgrup.com',
+    'otokocmobiltest@portalgrup.com','projectmn@portalgrup.com'
     
     
   ];
 
- 
-  const screenshotName = `-${new URL(websiteUrl).hostname}.png`;
+  const sadecedomain = new URL(websiteUrl).hostname;
+  const screenshotName = `${new URL(websiteUrl).hostname}.png`;
 
   
   const mailOptions = {
     from: 'portalgrup.test.otomasyon@gmail.com',
-    to: recipients.join('otokocmobiltest@portalgrup.com'), 
-    subject: `Siteye Ulaşılamadı: ${websiteUrl}`,
-    text: `Siteye ulaşılamamaktadır: ${websiteUrl}. Ekran görüntüsü ektedir. -PG Test Ekibi, Site Kontrol Test Otomasyonu \n\n`,
+    to: recipients.join(','), 
+    subject: `Siteye Ulaşılamadı: ${sadecedomain}`,
+    text: `Siteye Ulaşılamadı: ${websiteUrl}. Ekran görüntüsü ektedir. \n\n-PG Test Ekibi, Site Kontrol Test Otomasyonu \n\n`,
     attachments: [
       {
         filename: screenshotName, 
@@ -108,33 +116,34 @@ async function sendEmail(screenshotPath: string, websiteUrl: string) {
 
 
 websites.forEach((url) => {
-  test(`Check status code and take screenshot for ${url}`, async ({ page }) => {
+  test(`Statü kodu kontrol ediliyor ve ekran görüntüsü alınıyor ${url}`, async ({ page }) => {
+    let isSiteWorking = false;
+    const maxAttempts = 3;
     let response;
-    try {
-      
-      response = await page.goto(url, { waitUntil: 'networkidle' });   //daha sonra domcontentloaded kullanarak da test et
 
-      
-      if (response && !response.ok()) {
-        console.log(`Çökük Site: ${url} - Status Code: ${response.status()}`);
-
-       
-        const screenshotPath = `screenshots/${new URL(url).hostname}.png`;
-        await page.screenshot({ path: screenshotPath });
-
-       
-        await sendEmail(screenshotPath, url);
-      } else {
-        console.log(`Site Çalışıyor: ${url} - Status Code: ${response?.status()}`);
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+        if (response && response.ok()) {
+          console.log(`Site çalışıyor: ${url} - Statü Kodu: ${response.status()} (Attempt ${attempt})`);
+          isSiteWorking = true;
+          break;
+        } else {
+          console.error(`Attempt ${attempt}:Siteye erişilmiyor: ${url} - Statü Kodu: ${response ? response.status() : 'No response'}`);
+        }
+      } catch (error) {
+        console.error(`Attempt ${attempt}:Siteye erişilmiyor: ${url} - Hata: ${error.message}`);
       }
-    } catch (error) {
-      console.error(`Siteye erişilemiyor: ${url} - Hata: ${error.message}`);
 
-    
+      if (attempt < maxAttempts) {
+        
+        await new Promise(r => setTimeout(r, 6000));
+      }
+    }
+
+    if (!isSiteWorking) {
       const screenshotPath = `screenshots/${new URL(url).hostname}.png`;
       await page.screenshot({ path: screenshotPath });
-
-      
       await sendEmail(screenshotPath, url);
     }
   });
