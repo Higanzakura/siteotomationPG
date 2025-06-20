@@ -1,0 +1,46 @@
+# İş akışının adı, GitHub'ın Actions sekmesinde görünecek isim.
+name: Site Kontrol Otomasyonu
+
+# Bu iş akışını neyin tetikleyeceğini belirtir.
+on:
+  # Cron zamanlaması ile otomatik çalıştırma.
+  schedule:
+    - cron: '*/2 * * * *' # Her 15 dakikada bir çalışır
+  
+  # GitHub arayüzünden manuel olarak da çalıştırabilmek için.
+  workflow_dispatch:
+
+# Yapılacak işleri tanımlar.
+jobs:
+  # "test" adında bir iş tanımlıyoruz.
+  test:
+    # İşin çalışacağı sanal makinenin işletim sistemi.
+    runs-on: ubuntu-latest
+
+    # İşin adımlarını belirtir.
+    steps:
+      # 1. Adım: Repodaki kodumuzu sanal makineye indirir.
+      - name: Kodu İndir
+        uses: actions/checkout@v4
+
+      # 2. Adım: Belirli bir Node.js versiyonunu kurar.
+      - name: Node.js Kurulumu
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # 3. Adım: Gerekli paketleri kurar.
+      - name: Paketleri Kur
+        run: npm ci
+
+      # 4. Adım: Playwright tarayıcılarını ve sistem bağımlılıklarını kurar.
+      - name: Playwright Tarayıcılarını Kur
+        run: npx playwright install --with-deps
+
+      # 5. Adım: Playwright testini çalıştırır.
+      - name: Site Kontrol Testini Çalıştır
+        run: npx playwright test
+        # Ortam değişkenlerini (env) doğrudan burada tanımlıyoruz.
+        env:
+          EMAIL_USER: 'portalgrup.test.otomasyon@gmail.com'
+          EMAIL_PASS: 'isye jwlg zokt waow' # DİKKAT: Şifreniz burada açıkça görünüyor.
