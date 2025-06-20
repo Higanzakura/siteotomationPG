@@ -2,7 +2,12 @@
   "name": "test",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+
+    "build": "tsc",
+    "start": "node dist/start.js"
+
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

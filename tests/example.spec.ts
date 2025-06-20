@@ -28,7 +28,7 @@ const websites = [
   "https://www.yapikrediportfoy.com.tr/",
   "https://www.tofasanadoluarabalarimuzesi.com",
   "https://www.opar.com/",
-  "https://www.tofas.com.tr/",
+  "https://www.tofas.com.tr/", 
   "https://www.alfaromeo.com.tr/",
   "https://www.otomobil.fiat.com.tr/",
   "https://www.jeep.com.tr/",
@@ -66,8 +66,6 @@ const websites = [
   "https://www.bigaiaturkiye.com/",
   "https://www.selfit.com.tr/",
   "https://www.eczacibasiilac.com.tr/"
-
-
 ];
 
 
@@ -83,8 +81,10 @@ async function sendEmail(screenshotPath: string, websiteUrl: string) {
 
   
   const recipients = [
-    'otokocmobiltest@portalgrup.com','projectmn@portalgrup.com'
     
+    'guney.kaya@portalgrup.com'
+    //,'serkan.cosgun@portalgrup.com','muhammed.guner@portalgrup.com','mizgin.esen@portalgrup.com','camay.duran@portalgrup.com','esra.alkasan@portalgrup.com','nejlanur.odabasi@portalgrup.com'
+    //, 'projectmn@portalgrup.com'   
     
   ];
 
@@ -116,28 +116,29 @@ async function sendEmail(screenshotPath: string, websiteUrl: string) {
 
 
 websites.forEach((url) => {
-  test(`Statü kodu kontrol ediliyor ve ekran görüntüsü alınıyor ${url}`, async ({ page }) => {
+  test(` ${url}`, async ({ page }) => {
     let isSiteWorking = false;
-    const maxAttempts = 3;
+    const maxAttempts = 2;   //deneme sayisi
     let response;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         response = await page.goto(url, { waitUntil: 'domcontentloaded' });
         if (response && response.ok()) {
-          console.log(`Site çalışıyor: ${url} - Statü Kodu: ${response.status()} (Attempt ${attempt})`);
+          console.log(`[[[[OK]]]] ${new URL(url).hostname} - Statü Kodu: ${response.status()} (Kontrol ${attempt})`);
           isSiteWorking = true;
           break;
         } else {
-          console.error(`Attempt ${attempt}:Siteye erişilmiyor: ${url} - Statü Kodu: ${response ? response.status() : 'No response'}`);
+          console.error(`Kontrol ${attempt}:Siteye erişilmiyor: ${url} - Statü Kodu: ${response ? response.status() : 'No response'}`);
         }
       } catch (error) {
-        console.error(`Attempt ${attempt}:Siteye erişilmiyor: ${url} - Hata: ${error.message}`);
+        console.error(`Kontrol ${attempt}:Siteye erişilmiyor: ${url} - Hata: ${error.message}`);
       }
 
       if (attempt < maxAttempts) {
         
-        await new Promise(r => setTimeout(r, 6000));
+        await new Promise(r => setTimeout(r, 10000));
+        
       }
     }
 
