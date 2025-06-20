@@ -3,7 +3,8 @@ import * as nodemailer from 'nodemailer';
 
 
 const websites = [
-  'https://google.com.tr'
+  'https://google.com.tr',
+  'https://httpstat.us/404'
 ];
 
 
