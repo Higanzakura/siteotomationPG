@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-
     "build": "tsc",
     "start": "node dist/start.js"
-
   },
   "keywords": [],
   "author": "",
@@ -14,7 +12,8 @@
   "description": "",
   "devDependencies": {
     "@playwright/test": "^1.50.1",
-    "@types/node": "^22.13.1"
+    "@types/node": "^22.13.1",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "nodemailer": "^6.10.0"
